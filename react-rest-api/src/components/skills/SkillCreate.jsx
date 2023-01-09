@@ -1,9 +1,12 @@
 import React, { useContext } from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SkillContext from "../../Context/SkillContext";
 
 export const SkillCreate = () => {
-  const { formValues, onChange, storeSkill } = useContext(SkillContext);
+  const { formValues, onChange, storeSkill, errors, setErrors } = useContext(SkillContext);
+  useEffect(() => {
+    setErrors({});
+  }, []);
 
   return (
     <div className="mt-12">
@@ -24,6 +27,9 @@ export const SkillCreate = () => {
               value={formValues["name"]}
               onChange={onChange}
             />
+            {errors.name && (
+              <span className="text-sm text-red-400">{errors.name[0]}</span>
+            )}
           </div>
           <div className="mb-4">
             <label htmlFor="slug" className="block mb-2 text-sm font-medium">
@@ -36,6 +42,9 @@ export const SkillCreate = () => {
               value={formValues["slug"]}
               onChange={onChange}
             />
+            {errors.slug && (
+              <span className="text-sm text-red-400">{errors.slug[0]}</span>
+            )}
           </div>
         </div>
 
