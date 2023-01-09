@@ -6,11 +6,18 @@ axios.defaults.baseURL = "http://127.0.0.1:8000/api/V1/";
 
 const SkillContext = createContext();
 
+const initialForm = {
+  name: "", 
+  slug: ""
+}
+
 export const SkillProvider = ({ children }) => {
+  const [formValues, setFormValue] = useState(initialForm);
   const [skills, setSkills] = useState([]);
   const [skill, setSkill] = useState([]);
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+
 
   const getSkills = async () => {
     const apiSkills = await axios.get("skills");
@@ -19,14 +26,14 @@ export const SkillProvider = ({ children }) => {
   };
 
   const getSkill = async (id) => {
-    const response = await axios.get("skills" + id);
-    setSkill(response.data.data);
+    const response = await axios.get("skills/" + id);
+    const apiSkill = response.data.data;
+    setSkill(apiSkill);
+    setFormValue({
+      "name": apiSkill.name, 
+      "slug": apiSkill.slug
+    }) 
   }
-
-  const [formValues, setFormValue] = useState({
-    name: "",
-    slug: "",
-  });
 
   const onChange = (e) => {
     const { name, value } = e.target;
@@ -37,7 +44,7 @@ export const SkillProvider = ({ children }) => {
     e.preventDefault();
     try {
       await axios.post("skills", formValues);
-      getSkills();
+      setFormValue(initialForm)
       navigate("/skills");
     }
     catch (e) {
@@ -47,6 +54,26 @@ export const SkillProvider = ({ children }) => {
     }
   };
 
+  const updateSkill = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.put("skills/" + skill.id, formValues);
+      setFormValue(initialForm)
+      navigate("/skills");
+    } 
+    catch (e) {
+      if (e.response.status === 422) {
+        setErrors(e.response.data.errors);
+      }
+    }
+  }
+
+  const deleteSkill = async (id) => {
+    if (!window.confirm("Are you sure?")) return;
+    await axios.delete("skills/" + id);
+    getSkills();
+  }
+
   return <SkillContext.Provider value={{
     skill,
     skills, 
@@ -54,7 +81,11 @@ export const SkillProvider = ({ children }) => {
     getSkills, 
     onChange, 
     formValues,
-    storeSkill
+    storeSkill,
+    errors, 
+    updateSkill,
+    deleteSkill,
+    setErrors
   }}>
      {children}
   </SkillContext.Provider>
