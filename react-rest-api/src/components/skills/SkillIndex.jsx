@@ -5,7 +5,7 @@ import SkillContext from "../../Context/SkillContext";
 
 
 export const SkillIndex = () => {
-  const { skills, getSkills } = useContext(SkillContext);
+  const { skills, getSkills, deleteSkill } = useContext(SkillContext);
 
   useEffect(() => {
     getSkills();
@@ -13,10 +13,10 @@ export const SkillIndex = () => {
 
   return (
     <div className="mt-12">
-      <div className="flex-justify-end m-2 p-2">
+      <div className="flex justify-end m-2 p-2">
         <Link
           to="/skills/create"
-          className="px-4 py-2 bg-indigo-500 hover:bg-indigo"
+          className="px-4 py-2 bg-indigo-500 hover:bg-indigo-700 text-white rounded-md"
         >
           Create new Skill
         </Link>
@@ -44,7 +44,19 @@ export const SkillIndex = () => {
                   {console.log(skill.id + skill.name)}
                   <td className="px-6 py-4">{skill.name}</td>
                   <td className="px-6 py-4">{skill.slug}</td>
-                  <td className="px-6 py-4">Edit / Delete</td>
+                  <td className="px-6 py-4 space-x-2">
+                    <Link
+                      to={`/skills/${skill.id}/edit`}
+                      className="px-4 py-2 bg-green-500 hover:bg-green-700 text-white rounded-md"
+                    >
+                      Edit
+                    </Link>
+                    <button
+                      onClick={() => deleteSkill(skill.id)}
+                      className="px-4 py-2 bg-red-500 hover:bg-red-700 text-white rounded-md">
+                      Delete
+                    </button>
+                  </td>
                 </tr>
               );
             })}
